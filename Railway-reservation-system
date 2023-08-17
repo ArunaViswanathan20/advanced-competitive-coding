@@ -1,0 +1,222 @@
+#include <iostream>
+#include<vector>
+using namespace std;
+
+class ticket
+{
+public:
+    int id;
+    string name;
+    int age;
+};
+class rrs
+{
+private:
+    vector<ticket>btickets;
+    vector<ticket>rtickets;
+    vector<ticket>wtickets;
+    int NTnum;
+    int RTnum;
+    int WTnum;
+    int totberth;
+    int totrberth;
+    int totwberth;
+
+public:
+    rrs()
+    {
+        NTnum=1;
+        RTnum=1;
+        WTnum=1;
+        totberth=1;
+        totrberth=1;
+        totwberth=1;
+    }
+
+    void bktket()
+    {
+        string name;
+        int age;
+
+        cout <<"enter name:"<<endl;
+        cin>>name;
+        cout<<"enter age:"<<endl;
+        cin>>age;
+        ticket newticket;
+        newticket.id=NTnum++;
+        newticket.name=name;
+        newticket.age=age;
+
+        if(totberth>0)
+        {
+            btickets.push_back(newticket);
+            totberth--;
+            cout<<"ticket booked successfully with id:"<<newticket.id<<endl;
+        }
+        else if(totrberth>0)
+        {
+            rtickets.push_back(newticket);
+            totrberth--;
+            cout<<"ticket booked at rac successfully with id:"<<newticket.id<<endl;
+        }
+        else if(totwberth>0)
+        {
+            wtickets.push_back(newticket);
+            totwberth--;
+            cout<<"ticket booked for wait list successfully with id:"<<newticket.id<<endl;
+        }
+        else
+        {
+        	cout<<"sry no tickets available"<<endl;
+		}
+
+    }
+
+    void cantket(int tnum)
+    {
+    	bool found=false;
+		for(auto it=btickets.begin();it!=btickets.end();++it)
+    	{
+    		if(it->id==tnum)
+    		{
+    			btickets.erase(it);
+    			found=true;
+    			totberth++;
+    			break;
+			}
+		}
+		if(!found)
+		for(auto it=rtickets.begin();it!=rtickets.end();++it)
+    	{
+    		if(it->id==tnum)
+    		{
+    			rtickets.erase(it);
+    			found=true;
+    			totrberth++;
+    			break;
+			}
+		}
+		if(!found)
+		for(auto it=wtickets.begin();it!=wtickets.end();++it)
+    	{
+    		if(it->id==tnum)
+    		{
+    			wtickets.erase(it);
+    			found=true;
+    			totwberth++;
+    			break;
+			}
+		}
+		if(found)
+		{
+			cout<<"ticket cancelled successfully"<<endl;
+			allocatetketfromrac();
+			allocatetketfromwait();
+		}
+		else
+		{
+			cout<<"ticket not found"<<endl;
+			cout<<"try again with correct id"<<endl;
+		}
+	}
+
+    void allocatetketfromrac()
+    {
+        cout<<"hi"<<endl;
+        if(!rtickets.empty()&&totberth>0)
+        {
+            auto ir=rtickets.begin();
+            ticket aloted=rtickets[0];
+            rtickets.erase(rtickets.begin());
+            btickets.push_back(aloted);
+            totrberth++;
+            totberth--;
+            cout<<"ticket moved from rac to berth for id"<<ir->id<<endl;
+        }
+    }
+    void allocatetketfromwait()
+    {
+        if(!wtickets.empty()&&totrberth>0)
+        {
+            auto ig=wtickets.begin();
+            ticket alloted=wtickets[0];
+            wtickets.erase(wtickets.begin());
+            rtickets.push_back(alloted);
+            totwberth++;
+            totrberth--;
+            cout<<"ticket moved from wait to rac for id"<<ig->id<<endl;
+        }
+    }
+
+    void printremaining()
+    {
+        cout<<"available berth tickets:"<<totberth<<endl;
+        cout<<"available rac tickets  :"<<totrberth<<endl;
+        cout<<"available wait tickets :"<<totwberth<<endl;
+    }
+    void bookedtickets()
+    {
+      cout<<"berth tickets:"<<endl;
+      for(auto it=btickets.begin();it!=btickets.end();++it)
+      {
+          cout<<"ticket id     :"<<it->id<<endl;
+          cout<<"passenger name:"<<it->name<<endl;
+          cout<<"passenger age :"<<it->age<<endl;
+      }
+      cout<<"rac tickets:"<<endl;
+      for(auto it=rtickets.begin();it!=rtickets.end();++it)
+      {
+          cout<<"ticket id     :"<<it->id<<endl;
+          cout<<"passenger name:"<<it->name<<endl;
+          cout<<"passenger age :"<<it->age<<endl;
+      }
+      cout<<"waitlist tickets:"<<endl;
+      for(auto it=wtickets.begin();it!=wtickets.end();++it)
+      {
+          cout<<"ticket id     :"<<it->id<<endl;
+          cout<<"passenger name:"<<it->name<<endl;
+          cout<<"passenger age :"<<it->age<<endl;
+      }
+    }
+};
+int main()
+{
+    int s;
+    int option;
+    rrs sys;
+    do
+    {
+
+
+    cout<<"1.Book ticket"<<endl;
+    cout<<"2.Cancel ticket"<<endl;
+    cout<<"3.Available tickets"<<endl;
+    cout<<"4.booked ticket"<<endl;
+    cout<<"5.Exit"<<endl;
+    cin>>option;
+
+    switch(option)
+    {
+        case 1:
+            sys.bktket();
+            break;
+        case 2:
+        	int num;
+        	cout<<"Enter ticket number:"<<endl;
+        	cin>>num;
+            sys.cantket(num);
+            break;
+        case 3:
+            sys.printremaining();
+            break;
+        case 4:
+            sys.bookedtickets();
+            break;
+        default:
+            cout<<"invalid operation"<<endl;
+    }
+
+    }while(option!=5);
+
+    return 0;
+}
